@@ -583,8 +583,8 @@ int main() {
         {
             cout<<listaAux.getValor();
         }
-        int sum = Distancia(listaAux, listaVectoresQuery);
-        cout<<" Distancia: "<<sum;
+        int dist = Distancia(listaAux, listaVectoresQuery);
+        cout<<" Distancia: "<<dist;
         cout<<endl;
     }
 
