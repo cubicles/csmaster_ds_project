@@ -1,5 +1,10 @@
 #include <iostream>
-#include <bits/stdc++.h>
+#include <sstream> 
+#include <string>
+#include <iterator>
+#include <algorithm>
+#include <vector>
+//#include <bits/stdc++.h>
 using namespace std;
 
 //===========================================================================
@@ -249,11 +254,11 @@ public:
 template<typename Key, typename E> class DiccionarioArreglo : public Diccionario<Key, E>{
 private:
     //Usaremos nuestra lista arreglo (con su clavePar)
-    ListaArreglo<KVPar<Key, E>> *lista;
+    ListaArreglo<KVPar<Key, E> > *lista;
 public:
 
      DiccionarioArreglo(int tamMax = 100){
-    lista = new ListaArreglo<KVPar<Key, E>> (tamMax);
+    lista = new ListaArreglo<KVPar<Key, E> > (tamMax);
      }
   
     ~DiccionarioArreglo(){delete lista;}
@@ -311,6 +316,37 @@ public:
         listatokens.agregar(palabra);
     }
 };
+
+void tokenizacion2(ListaArreglo<string> &listatokens) {
+    // Bloque de lectura
+    int n; // Numero de oraciones a leer
+    cout << "Ingresar numero de inputs" << endl;
+    cin >> n; // Numero de inputs
+    cin.ignore();
+
+    while(n > 0) {
+        string sentence;        // Linea de texto
+        string delim = " ";     // Delimitador
+        getline(cin,sentence);  // Leer la linea de texto
+        cout << "La linea ingresada es " << sentence << endl; 
+
+        size_t pos = 0;
+        while((pos = sentence.find(delim)) != string::npos) {
+            listatokens.agregar(sentence.substr(0,pos));
+            sentence.erase(0, pos + delim.length());
+        }
+        if (!sentence.empty())
+            listatokens.agregar(sentence.substr(0,pos));
+        n--;
+    }
+}
+
+void ImprimirListaString(ListaArreglo<string> &lista) {
+    for (int i = 0; i < lista.longitud(); i++) {
+        lista.moverAPosicion(i);
+        cout << "Elemento " << i << " de la lista: " << lista.getValor() << endl;
+    }
+}
 
 bool buscarEnLista(ListaArreglo<string> &listaPalabras, string elemento){
     bool checklista = 0;
@@ -393,38 +429,48 @@ void lectorGeneral(ListaArreglo<string> palabra, ListaArreglo<int> frecuencia){
         frecuencia.siguiente();
     }
 };
-void DicIDVectorizado(DiccionarioArreglo<int,ListaArreglo<int>> VectorID){
+void DicIDVectorizado(DiccionarioArreglo<int,ListaArreglo<int> > VectorID){
 
 };
 
+
+
 int main() {
-  ListaArreglo<string> listatokens;
-  ListaArreglo<string> listaPalab;
-  ListaArreglo<int> listaVectores;
-  string texto;
-  string texto2;
-  string palabra;
-  bool enlista;
-  getline(cin,texto);
-  getline(cin,texto2);
+    // Declaring Variables
+    ListaArreglo<string> listatokens;
+    ListaArreglo<string> listaPalab;
+    ListaArreglo<int> listaVectores;
+    string texto;
+    string texto2;
+    string palabra;
+    bool enlista;
+
+    // Input
+
+    // getline(cin,texto);
+    // getline(cin,texto2);
+
+
   //====================================================
   //Entrada: []; "Hola Hola mundo mundo argentina brasil chile peru messi"
   //Salida: [Hola ,Hola, mundo, mundo, argentina, brasil, chile, peru, messi]
-  tokenizacion(listatokens,texto);
+  //->tokenizacion(listatokens,texto);
+  tokenizacion2(listatokens);
+  ImprimirListaString(listatokens);
   //====================================================
   //Entrada: []; [Hola ,Hola, mundo, mundo, argentina, brasil, chile, peru, messi]
   //Salida: [Hola,mundo,argentina,brasil,chile,peru,messi]
-  listaPalabras(listaPalab,listatokens);
+  //->listaPalabras(listaPalab,listatokens);
   //====================================================
   //Entrada: []; "Hola mundo argentina messi"; [Hola,mundo,argentina,brasil,chile,peru,messi]"
   //Salida: [1,1,1,0,0,0,1]
-  vectorizacion(listaVectores, texto2, listaPalab);
+  //->vectorizacion(listaVectores, texto2, listaPalab);
   //====================================================
   //Entrada: [(int,ListaArreglo<int>);(,);(,)] ; "Hola mundo" "Hola argentina" "argentina messi"
   //Salida: [(0,[1,1,0,0]), (1,[1,0,1,0]),(2,[0,0,1,1])]
 
 
 
-  lectorGeneral(listaPalab,listaVectores);
+  //->lectorGeneral(listaPalab,listaVectores);
   return 0;
 }
