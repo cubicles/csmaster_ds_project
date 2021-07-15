@@ -541,7 +541,7 @@ int main() {
     ListaArreglo<int> listaAux;
     ListaArreglo<int> listaAux_2;
     string lineatexto, textoQuery;
-    int N=4;
+    int N=4, radio;
     int id=1;
     string texto;
     while (N>0)
@@ -555,8 +555,7 @@ int main() {
         id++;
     }
 
-    cout<<"Ingrese un query: ";
-    getline(cin,textoQuery);
+
 
     //Vectoriza las N lineas de Texto de un diccionario y añade su id desde 1 hasta N
 
@@ -568,6 +567,11 @@ int main() {
         DicVectorizado.insertar(i,listaVectores);
         listaVectores.limpiar();
     }
+
+    cout<<"Ingrese un query: ";
+    getline(cin,textoQuery);
+    cout<<endl<<"Ingrese el radio: ";
+    cin>>radio;
     vectorizacion(listaVectoresQuery, textoQuery, listaPalab);//obtenemos vector del query
 
     //Imprimir el diccionario vectorizado su id y su texto
@@ -583,8 +587,8 @@ int main() {
         {
             cout<<listaAux.getValor();
         }
-        int dist = Distancia(listaAux, listaVectoresQuery);
-        cout<<" Distancia: "<<dist;
+        int distancia = Distancia(listaAux, listaVectoresQuery);
+        (distancia <= radio)? cout<<" Distancia: "<<distancia<<" Texto similar": cout<<" " ;
         cout<<endl;
     }
 
