@@ -1,5 +1,5 @@
 #include <iostream>
-#include <sstream> 
+#include <sstream>
 #include <string>
 #include <iterator>
 #include <algorithm>
@@ -11,9 +11,9 @@ using namespace std;
 //=========================== LISTA =========================================
 //===========================================================================
 template<typename E> class Lista{
-  private:
+private:
 
-  public:
+public:
     //constructor
     Lista(){} //podemos dejarla vacia
 
@@ -51,10 +51,10 @@ template<typename E> class Lista{
 //para que pueda heredar los metodos usamos
 //los dos puntos
 template<typename E> class ListaArreglo : public Lista<E>{
-  private:
+private:
     //atributos(variables) que tendra esta lista hija
     //estos atributos no los pongo en el padre porque
-    //cada TDA que trabajaremos tendra diferentes   
+    //cada TDA que trabajaremos tendra diferentes
     //Arreglo de elementos
     E* arreglo;
     //Tamanho fijo
@@ -63,18 +63,18 @@ template<typename E> class ListaArreglo : public Lista<E>{
     int tamLista;
     //Indice "actual"
     int actual;
-  
-  public:
+
+public:
     //constructor:
     ListaArreglo(int tamMax = 100){
-      this->tamMax = tamMax;
-      //deseamos que inicien con 0
-      this->tamLista = this->actual = 0;
-      this->arreglo =  new E[this->tamMax];;
+        this->tamMax = tamMax;
+        //deseamos que inicien con 0
+        this->tamLista = this->actual = 0;
+        this->arreglo =  new E[this->tamMax];;
     }
     //destructor
     ~ListaArreglo(){
-      delete[] this->arreglo;
+        delete[] this->arreglo;
     }
 
     //Mover "actual" al inicio de la lista
@@ -84,7 +84,7 @@ template<typename E> class ListaArreglo : public Lista<E>{
 
     //Mover "actual" al final de la lista:
     // primer espacio disponible
-    //si quisiera poder moverme al final de todo el 
+    //si quisiera poder moverme al final de todo el
     //arreglo (incluye espaciones vacios)
     //seria tamMax
     void moverAlFinal() {
@@ -148,14 +148,14 @@ template<typename E> class ListaArreglo : public Lista<E>{
         this->arreglo = new E[this->tamMax];
     }
 
-    //inserta elemento en la ubicacion actual del puntero   9 5 6 7 4 - 
-    void insertar (E elemento){  
+    //inserta elemento en la ubicacion actual del puntero   9 5 6 7 4 -
+    void insertar (E elemento){
         for (int i = this->tamLista; i > this->actual; i--){
-          this->arreglo[i] = this->arreglo[i-1];
-        } 
-          this->arreglo[this->actual] = elemento;
-          this->tamLista++;   
-      
+            this->arreglo[i] = this->arreglo[i-1];
+        }
+        this->arreglo[this->actual] = elemento;
+        this->tamLista++;
+
     }
     //Eliminar y retornar el elemento "actual" eliminado
     E eliminar() {
@@ -196,7 +196,7 @@ public:
     //Retornar: un registro. Si hay mas de un registro con la misma clave,
     //  se debe remover uno de manera arbitraria
     //Retornar NULL si la clave "K" no se encuentra en el diccionario
-    
+
     //virtual E remover(Key K) = 0;
 
 
@@ -222,8 +222,8 @@ private:
     E e;
 public:
     //Constructores
-    KVPar(){} 
-    //primer constructor: me ingresa el valor de la clave y el registro  
+    KVPar(){}
+    //primer constructor: me ingresa el valor de la clave y el registro
     KVPar(Key kval, E eval){this->k = kval; this->e = eval;}
     //segundo constructor: debe tener distinto tipo al constructor anterior o diferente cantidad de parametros
     //esto es llamado sobre carga de constructores para este caso  (tbn se podria hacer con sobre cargar de operador de asignacion)
@@ -247,7 +247,7 @@ public:
         return this->e;
     }
 
-    
+
 };
 
 //(recordando: DiccionarioArreglo hereda de Diccionario)
@@ -257,49 +257,50 @@ private:
     ListaArreglo<KVPar<Key, E> > *lista;
 public:
 
-     DiccionarioArreglo(int tamMax = 100){
-    lista = new ListaArreglo<KVPar<Key, E> > (tamMax);
-     }
-  
+    DiccionarioArreglo(int tamMax = 100){
+        lista = new ListaArreglo<KVPar<Key, E> > (tamMax);
+    }
+
     ~DiccionarioArreglo(){delete lista;}
-   
+
     void limpiar(){
         lista->limpiar();
     }
     void insertar(Key K, E e){
-      KVPar<Key, E> temp(K, e);
-      lista->insertar(temp);
+        KVPar<Key, E> temp(K, e);
+        lista->insertar(temp);
     }
     E remover(Key K){
-      for(this->lista->moverAInicio();
-        this->lista->posicionActual() < this->lista->longitud();
-        this->lista->siguiente()) {
-          KVPar<Key, E> temp = this->lista->getValor();
-          if(K==temp.key()){
-            E valor=temp.valor();
-            this->lista->eliminar();
-            return valor;
-          }
+        for(this->lista->moverAInicio();
+            this->lista->posicionActual() < this->lista->longitud();
+            this->lista->siguiente()) {
+            KVPar<Key, E> temp = this->lista->getValor();
+            if(K==temp.key()){
+                E valor=temp.valor();
+                this->lista->eliminar();
+                return valor;
+            }
         }
-      return NULL;
+        return NULL;
     }
     //elimina el ultimo registrado
     E removerCualquiera(){
-      this->lista->moverAlFinal();
-      this->lista->anterior();
-      KVPar<Key, E> e = this->lista->eliminar();
-      return e.valor();
+        this->lista->moverAlFinal();
+        this->lista->anterior();
+        KVPar<Key, E> e = this->lista->eliminar();
+        return e.valor();
     }
 
     E encontrar(Key K){
-      for(this->lista->moverAInicio();
-        this->lista->posicionActual() < this->lista->longitud();
-        this->lista->siguiente()) {
-          KVPar<Key, E> temp = this->lista->getValor();
-          if(K==temp.key())
-            return temp.valor();
+        for(this->lista->moverAInicio();
+            this->lista->posicionActual() < this->lista->longitud();
+            this->lista->siguiente()) {
+            KVPar<Key, E> temp = this->lista->getValor();
+            if(K==temp.key())
+                return temp.valor();
         }
       return 0; // Inicialmente estaba como NULL
+
     }
 
     int longitud(){
@@ -308,7 +309,7 @@ public:
 
 };
 
- void tokenizacion(ListaArreglo<string> &listatokens, string texto){
+void tokenizacion(ListaArreglo<string> &listatokens, string texto){
     string palabra;
     stringstream check1(texto);
     while(getline(check1, palabra, ' '))
@@ -328,7 +329,7 @@ void tokenizacion2(ListaArreglo<string> &listatokens) {
         string sentence;        // Linea de texto
         string delim = " ";     // Delimitador
         getline(cin,sentence);  // Leer la linea de texto
-        cout << "La linea ingresada es " << sentence << endl; 
+        cout << "La linea ingresada es " << sentence << endl;
 
         size_t pos = 0;
         while((pos = sentence.find(delim)) != string::npos) {
@@ -350,9 +351,9 @@ void ImprimirListaString(ListaArreglo<string> &lista) {
 
 bool buscarEnLista(ListaArreglo<string> &listaPalabras, string elemento){
     bool checklista = 0;
-    for (listaPalabras.moverAInicio(); 
-    listaPalabras.posicionActual() < listaPalabras.longitud(); 
-    listaPalabras.siguiente())
+    for (listaPalabras.moverAInicio();
+         listaPalabras.posicionActual() < listaPalabras.longitud();
+         listaPalabras.siguiente())
     {
         checklista = listaPalabras.getValor() == elemento;
         if(checklista){
@@ -365,9 +366,9 @@ bool buscarEnLista(ListaArreglo<string> &listaPalabras, string elemento){
 void listaPalabras(ListaArreglo<string> &listaPalabras, ListaArreglo<string> &listatokens){
     bool enlista;
     string palabra;
-    for (listatokens.moverAInicio(); 
-    listatokens.posicionActual() < listatokens.longitud(); 
-    listatokens.siguiente())
+    for (listatokens.moverAInicio();
+         listatokens.posicionActual() < listatokens.longitud();
+         listatokens.siguiente())
     {
         palabra=listatokens.getValor();
         enlista=buscarEnLista(listaPalabras, palabra);
@@ -384,15 +385,15 @@ void vectorizacion(ListaArreglo<int> &FrecuenciaPalabras, string LineaTexto, Lis
     bool aux;
     stringstream check1(LineaTexto);
     tokenizacion(tokensTexto, LineaTexto);
-    for (listaPalabras.moverAInicio(); 
-    listaPalabras.posicionActual() < listaPalabras.longitud(); 
-    listaPalabras.siguiente())
-    {   
+    for (listaPalabras.moverAInicio();
+         listaPalabras.posicionActual() < listaPalabras.longitud();
+         listaPalabras.siguiente())
+    {
         cont=0;
         palabra=listaPalabras.getValor();
         for(tokensTexto.moverAInicio();
-        tokensTexto.posicionActual()<tokensTexto.longitud();
-        tokensTexto.siguiente()){
+            tokensTexto.posicionActual()<tokensTexto.longitud();
+            tokensTexto.siguiente()){
             token=tokensTexto.getValor();
             aux = palabra==token;
             if (aux)cont++;
@@ -401,6 +402,7 @@ void vectorizacion(ListaArreglo<int> &FrecuenciaPalabras, string LineaTexto, Lis
     }
 };
 //============================================LECTORES==============================================
+
 void lectorIDVectorizado(DiccionarioArreglo<int,ListaArreglo<int>> DicVectorizado, DiccionarioArreglo<int,string> DicLineaTexto){
     ListaArreglo<int> listaNumeroArreglo; // variable auxiliar
     string lineatexto; // input
@@ -419,27 +421,28 @@ void lectorIDVectorizado(DiccionarioArreglo<int,ListaArreglo<int>> DicVectorizad
         cout<<endl;
     }
 };
+
 void lectorNum(ListaArreglo<int> listaLectura){
-     for (listaLectura.moverAInicio(); 
-      listaLectura.posicionActual() < listaLectura.longitud(); 
-      listaLectura.siguiente())
+    for (listaLectura.moverAInicio();
+         listaLectura.posicionActual() < listaLectura.longitud();
+         listaLectura.siguiente())
     {
         cout<<listaLectura.getValor()<<endl;
     }
 };
 void lectorStr(ListaArreglo<string> listaLectura){
-     for (listaLectura.moverAInicio(); 
-      listaLectura.posicionActual() < listaLectura.longitud(); 
-      listaLectura.siguiente())
+    for (listaLectura.moverAInicio();
+         listaLectura.posicionActual() < listaLectura.longitud();
+         listaLectura.siguiente())
     {
         cout<<listaLectura.getValor()<<endl;
     }
 };
 void lectorGeneral(ListaArreglo<string> palabra, ListaArreglo<int> frecuencia){
     frecuencia.moverAInicio();
-     for (palabra.moverAInicio(); 
-      palabra.posicionActual() < palabra.longitud(); 
-      palabra.siguiente())
+    for (palabra.moverAInicio();
+         palabra.posicionActual() < palabra.longitud();
+         palabra.siguiente())
     {
         cout<<"----------------------"<<endl;
         cout<<"Palabra: "<<palabra.getValor()<<" | Frecuencia: "<<frecuencia.getValor()<<endl;
@@ -485,7 +488,18 @@ void DicIDVectorizado(DiccionarioArreglo<int,ListaArreglo<int>> &DicVectorizado,
     }
 };
 
-
+int Distancia(ListaArreglo<int> textoVector, ListaArreglo<int> queryVector){
+    int calc, sum = 0;
+    for (textoVector.moverAInicio(), queryVector.moverAInicio();
+         textoVector.posicionActual() < textoVector.longitud();
+         textoVector.siguiente(), queryVector.siguiente())
+    {
+        calc = textoVector.getValor() - queryVector.getValor();
+        calc = abs(calc);
+        sum = sum + calc;
+    }
+    return sum;
+}
 
 int main() {
     DiccionarioArreglo<int,ListaArreglo<int>> DicVectorizado; // Dic<int,LisArray<int>>
@@ -509,16 +523,17 @@ int main() {
   //====================================================
   //Entrada: []; "Hola Hola mundo mundo argentina brasil chile peru messi"
   //Salida: [Hola ,Hola, mundo, mundo, argentina, brasil, chile, peru, messi]
+
 //   tokenizacion(listatokens,texto);
-  //  tokenizacion2(listatokens);
+    //  tokenizacion2(listatokens);
 //  ImprimirListaString(listatokens);
-  //====================================================
-  //Entrada: []; [Hola ,Hola, mundo, mundo, argentina, brasil, chile, peru, messi]
-  //Salida: [Hola,mundo,argentina,brasil,chile,peru,messi]
+    //====================================================
+    //Entrada: []; [Hola ,Hola, mundo, mundo, argentina, brasil, chile, peru, messi]
+    //Salida: [Hola,mundo,argentina,brasil,chile,peru,messi]
 //   listaPalabras(listaPalab,listatokens);
-  //====================================================
-  //Entrada: []; "Hola mundo argentina messi"; [Hola,mundo,argentina,brasil,chile,peru,messi]"
-  //Salida: [1,1,1,0,0,0,1]
+    //====================================================
+    //Entrada: []; "Hola mundo argentina messi"; [Hola,mundo,argentina,brasil,chile,peru,messi]"
+    //Salida: [1,1,1,0,0,0,1]
 //   vectorizacion(listaVectores, texto2, listaPalab);
 
   //====================================================
@@ -530,4 +545,5 @@ int main() {
    lectorIDVectorizado(DicVectorizado,DicLineaTexto);
 
   return 0;
+
 }
