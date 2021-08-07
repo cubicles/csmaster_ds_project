@@ -4,6 +4,11 @@
 #include <iterator>
 #include <algorithm>
 #include <vector>
+#include <fstream>
+#include <stdio.h>
+// Añade paquete de idiomas
+#include <locale.h>
+#include <windows.h>
 //#include <bits/stdc++.h>
 using namespace std;
 
@@ -299,7 +304,7 @@ public:
             if(K==temp.key())
                 return temp.valor();
         }
-      return 0; // Inicialmente estaba como NULL
+        return 0; // Inicialmente estaba como NULL
 
     }
 
@@ -364,15 +369,24 @@ bool buscarEnLista(ListaArreglo<string> &listaPalabras, string elemento){
 }
 
 void listaPalabras(ListaArreglo<string> &listaPalabras, ListaArreglo<string> &listatokens){
-    bool enlista;
+    bool enlista, stopW;
     string palabra;
+    ListaArreglo<string> listaStopwords;
+    //clean stopwords
+    string lineread;
+    ifstream sw("stopwords.txt");
+    while (sw.good()) {
+        getline(sw, lineread);
+        listaStopwords.agregar(lineread);
+    }
     for (listatokens.moverAInicio();
          listatokens.posicionActual() < listatokens.longitud();
          listatokens.siguiente())
     {
         palabra=listatokens.getValor();
         enlista=buscarEnLista(listaPalabras, palabra);
-        if(!enlista && palabra !=" \n"){
+        stopW=buscarEnLista(listaStopwords, palabra);
+        if(!enlista && palabra !=" \n" && !stopW){
             listaPalabras.agregar(palabra);
         }
     }
@@ -395,6 +409,7 @@ void vectorizacion(ListaArreglo<int> &FrecuenciaPalabras, string LineaTexto, Lis
             tokensTexto.posicionActual()<tokensTexto.longitud();
             tokensTexto.siguiente()){
             token=tokensTexto.getValor();
+
             aux = palabra==token;
             if (aux)cont++;
         }
@@ -412,12 +427,12 @@ void lectorIDVectorizado(DiccionarioArreglo<int,ListaArreglo<int>> DicVectorizad
         texto=DicLineaTexto.encontrar(i);
         cout<<"ID: "<<i<<" | Texto: "<< texto<<" | Vectorizado: ";
         listaNumeroArreglo = DicVectorizado.encontrar(i);
-        for (listaNumeroArreglo.moverAInicio(); 
-            listaNumeroArreglo.posicionActual() < listaNumeroArreglo.longitud(); 
-            listaNumeroArreglo.siguiente())
-            {
-                cout<<listaNumeroArreglo.getValor();
-            }
+        for (listaNumeroArreglo.moverAInicio();
+             listaNumeroArreglo.posicionActual() < listaNumeroArreglo.longitud();
+             listaNumeroArreglo.siguiente())
+        {
+            cout<<listaNumeroArreglo.getValor();
+        }
         cout<<endl;
     }
 };
@@ -451,43 +466,6 @@ void lectorGeneral(ListaArreglo<string> palabra, ListaArreglo<int> frecuencia){
     }
 };
 
-
-//========================================================DICTIONARY ARRAY=======================
-void DicIDVectorizado(DiccionarioArreglo<int,ListaArreglo<int>> &DicVectorizado, DiccionarioArreglo<int,string> &DicLineaTexto){
-// Contenedores de los datos
-    ListaArreglo<string> listatokens;// Hola, brasil, peru, peru
-    ListaArreglo<string> listaPalab; //Hola, brasil, peru
-    ListaArreglo<int> listaVectores; // 1,0,0
-    ListaArreglo<int> listaAux; // variable auxiliar
-    string lineatexto; // input
-    string texto; // variables auxiliares
-// seteado las N entradas de lineas de texto y el id
-    int N;
-    N=4;
-    int id=1;
-  // Generar inputs: Leer lineas de texto -> ListaPalbras sin repetir
-    while (N>0)
-    {
-        cout<<"Ingrese texto: "<<endl;
-        getline(cin,lineatexto);
-        DicLineaTexto.insertar(id,lineatexto); // Guardamos en diccionario id, linea de texto
-        tokenizacion(listatokens,lineatexto); // Tokenizar cada uno en listaArreglo<string>  listatokens
-        listaPalabras(listaPalab,listatokens); // Lista de palabras sin repetir
-        listatokens.limpiar();
-        N--;
-        id++;
-    }
-    //Vectoriza las N lineas de Texto de un diccionario y añade su id desde 1 hasta N 
-    for (int i = 1; i <= DicLineaTexto.longitud(); i++)
-    {
-        texto=DicLineaTexto.encontrar(i); 
-        cout<<texto<<endl;
-        vectorizacion(listaVectores,texto,listaPalab);
-        DicVectorizado.insertar(i,listaVectores);
-        listaVectores.limpiar();
-    }
-};
-
 int Distancia(ListaArreglo<int> textoVector, ListaArreglo<int> queryVector){
     int calc, sum = 0;
     for (textoVector.moverAInicio(), queryVector.moverAInicio();
@@ -501,49 +479,131 @@ int Distancia(ListaArreglo<int> textoVector, ListaArreglo<int> queryVector){
     return sum;
 }
 
+//========================================================DICTIONARY ARRAY=======================
+void DicIDVectorizado(DiccionarioArreglo<int,ListaArreglo<int>> &DicVectorizado, DiccionarioArreglo<int,string> &DicLineaTexto){
+// Contenedores de los datos
+    ListaArreglo<string> listatokens;// Hola, brasil, peru, peru
+    ListaArreglo<string> listaPalab; //Hola, brasil, peru
+
+    ListaArreglo<int> listaAux; // variable auxiliar
+    string texto; // variables auxiliares
+
+    /*_______________________________ Lectura de archivo_____________________________________ */
+    ifstream myfile;
+    ifstream ip("Libro1.csv");
+    string lineatext;
+    string valor;
+    int i = 0;
+    // Establecer el idioma a español
+    setlocale(LC_ALL, "spanish"); // Cambiar locale - Suficiente para máquinas Linux
+    //SetConsoleCP(1252); // Cambiar STDIN -  Para máquinas Windows
+    //SetConsoleOutputCP(1252); // Cambiar STDOUT - Para máquinas Windows
+
+    // seteado las N entradas de lineas de texto y el id
+    int id=1;
+    // Generar inputs: Leer lineas de texto -> ListaPalbras sin repetir
+    ListaArreglo<string> listaPrueba;
+    while (ip.good()) {
+        getline(ip, lineatext, ',');
+        getline(ip,valor, '\n');
+        if(id > 1){
+            listaPrueba.agregar(lineatext);
+        }
+        id++;
+    }
+    int id_=1;
+    cout<<"_________________________________________"<<endl;
+    cout<<"Corpus:__________________________________"<<endl;
+    cout<<"ID_____:_______Lineas de texto___________"<<endl;
+    for (listaPrueba.moverAInicio();
+         listaPrueba.posicionActual() < listaPrueba.longitud()-1;
+         listaPrueba.siguiente())
+    {
+        cout<<id_<<"     |"<<listaPrueba.getValor()<<endl;
+        DicLineaTexto.insertar(id_,listaPrueba.getValor()); // Guardamos en diccionario id, linea de texto
+        tokenizacion(listatokens,listaPrueba.getValor()); // Tokenizar cada uno en listaArreglo<string>  listatokens
+        listaPalabras(listaPalab,listatokens); // Refinamiento: eliminacion de palabras repetidas y stopwords
+        listatokens.limpiar();
+        id_++;
+    }
+
+    /*_______________________________ Imprimir Bag-of-words_____________________________________ */
+    cout<<"_________________________________________"<<endl;
+    cout<<"Bag of words:____________________________"<<endl;
+    for (listaPalab.moverAInicio();
+         listaPalab.posicionActual() < listaPalab.longitud();
+         listaPalab.siguiente())
+    {
+        cout<<listaPalab.posicionActual()+1<<" : "<<listaPalab.getValor()<<endl;
+    }
+
+
+    /*_______________________________ Consulta_____________________________________ */
+    ListaArreglo<int> listaVectoresQuery;
+    string textoQuery;
+    int radio;
+    cout<<"_________________________________________"<<endl;
+    cout<<"Consulta:________________________________"<<endl;
+    cout<<"Ingrese un query: ";
+    getline(cin,textoQuery);
+    cout<<endl<<"Ingrese el radio: ";
+    cin>>radio;
+    vectorizacion(listaVectoresQuery , textoQuery, listaPalab);//obtenemos vector del query
+    cout<<"Imprimir vector del query: "<<endl;
+    for(listaVectoresQuery.moverAInicio(); //Inicializacion
+        listaVectoresQuery.posicionActual()<listaVectoresQuery.longitud(); //Condicion de parada
+        listaVectoresQuery.siguiente()){ //Incremento
+        cout<<listaVectoresQuery.getValor()<<" ";
+    }
+    cout<<endl;
+
+    /*_______________________________ Calculo de distancia_____________________________________ */
+    cout<<"______________________________________________________"<<endl;
+    cout<<"Calculo de distancias:________________________________"<<endl;
+    //Vectoriza las N lineas de Texto de un diccionario y añade su id desde 1 hasta N
+    for (int i = 1; i <= DicLineaTexto.longitud(); i++)
+    {
+        ListaArreglo<int> listaVectores;
+        texto=DicLineaTexto.encontrar(i);
+        //cout<<texto<<endl;
+        vectorizacion(listaVectores,texto,listaPalab);
+        //Guardar en el diccionario
+        DicVectorizado.insertar(i,listaVectores); //agregar ajuste de clave: vector, valor: texto
+
+        listaAux = DicVectorizado.encontrar(i);
+
+
+        /*lectorIDVectorizado*/
+        ListaArreglo<int> listaNumeroArreglo; // variable auxiliar
+        string lineatexto_2; // input
+        string texto_2; // variables auxiliares
+
+
+        texto_2=DicLineaTexto.encontrar(i);
+        cout<<"ID: "<<i<<" | Texto: "<< texto_2<<" | Vectorizado: ";
+        listaNumeroArreglo = listaAux;
+        for (listaNumeroArreglo.moverAInicio();
+             listaNumeroArreglo.posicionActual() < listaNumeroArreglo.longitud();
+             listaNumeroArreglo.siguiente())
+        {
+            cout<<listaNumeroArreglo.getValor();
+        }
+
+        int distancia = Distancia(listaAux, listaVectoresQuery);
+        cout<<" Distancia: "<<distancia;
+        (distancia <= radio)? cout<<" Texto similar": cout<<" " ;
+        cout<<endl;
+
+        listaNumeroArreglo.limpiar();
+        cout<<endl;
+        DicVectorizado.limpiar();
+        listaVectores.limpiar();
+    }
+};
+
 int main() {
     DiccionarioArreglo<int,ListaArreglo<int>> DicVectorizado; // Dic<int,LisArray<int>>
     DiccionarioArreglo<int,string> DicLineaTexto; // Dic<int, strin>
-    
-    //======================Prueba distancia==============================
-    // ListaArreglo<string> listaTokens;
-    // ListaArreglo<string> listaPalab;
-    // ListaArreglo<int>listaVector;
-    // string query;
-    // int r;
-    // cout<<"Ingrese el query: ";
-    // getline(cin,query);
-    // cout<<endl;
-    // cout<<"Ingrese el r: ";
-    // cin>>r;
-    // tokenizacion(listaTokens,query);
-    // vectorizacion(listaVector,query,listaPalab);
-    
-    
-  //====================================================
-  //Entrada: []; "Hola Hola mundo mundo argentina brasil chile peru messi"
-  //Salida: [Hola ,Hola, mundo, mundo, argentina, brasil, chile, peru, messi]
-
-//   tokenizacion(listatokens,texto);
-    //  tokenizacion2(listatokens);
-//  ImprimirListaString(listatokens);
-    //====================================================
-    //Entrada: []; [Hola ,Hola, mundo, mundo, argentina, brasil, chile, peru, messi]
-    //Salida: [Hola,mundo,argentina,brasil,chile,peru,messi]
-//   listaPalabras(listaPalab,listatokens);
-    //====================================================
-    //Entrada: []; "Hola mundo argentina messi"; [Hola,mundo,argentina,brasil,chile,peru,messi]"
-    //Salida: [1,1,1,0,0,0,1]
-//   vectorizacion(listaVectores, texto2, listaPalab);
-
-  //====================================================
-  //Entrada: [(int,ListaArreglo<int>);(,);(,)] ; "Hola mundo" "Hola argentina" "argentina messi"
-  //Salida: [(0,[1,1,0,0]), (1,[1,0,1,0]),(2,[0,0,1,1])]
-
-   DicIDVectorizado(DicVectorizado,DicLineaTexto);
-   
-   lectorIDVectorizado(DicVectorizado,DicLineaTexto);
-
-  return 0;
-
+    DicIDVectorizado(DicVectorizado,DicLineaTexto);
+    return 0;
 }
